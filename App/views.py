@@ -54,4 +54,9 @@ def wallet_detail(request, id):
         wallet.delete()
         return JsonResponse({'message': 'The wallet object has been deleted successfully!'}, status = status.HTTP_204_NO_CONTENT, safe = False)
 
-        
+@api_view(['GET'])
+def crypto_list(request):
+    if request.method == 'GET':
+        cryptos = Crypto.objects.all()
+        cryptos_serializer = CryptoSerializer(cryptos, many = True)
+        return JsonResponse(cryptos_serializer.data, safe = False)
