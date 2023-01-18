@@ -57,6 +57,6 @@ def wallet_detail(request, id):
 @api_view(['GET'])
 def crypto_list(request):
     if request.method == 'GET':
-        cryptos = Crypto.objects.all()
+        cryptos = Crypto.objects.filter().order_by('CryptoCurrentPrice')
         cryptos_serializer = CryptoSerializer(cryptos, many = True)
         return JsonResponse(cryptos_serializer.data, safe = False)
