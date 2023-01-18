@@ -4,8 +4,7 @@ from App.models import Wallet, User, Crypto, Transactions
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('UserId', 'UserRole', 'UserFirstName', 'UserSurname', 'UserEmail', 'UserProfileURL', 'UserFacebookURL', 
-                  'UserInstagramURL', 'UserTwitterURL', 'UserPassword', 'UserStatus')
+        fields = ('UserId', 'UserFirstName', 'UserSurname', 'UserEmail', 'UserProfileURL', 'UserPassword', 'UserStatus')
         extra_kwargs = {
             'UserPassword': {'write_only': True}
         }
@@ -23,7 +22,7 @@ class UserSerializer(serializers.ModelSerializer):
 class WalletSerializer(serializers.ModelSerializer):
     class Meta:
         model = Wallet
-        fields = ('WalletId', 'WalletVault', 'WalletBTC', 'WalletETH', 'WalletUSDT', 'WalletBUSD', 'WalletSOL', 'WalletGALA',
+        fields = ('WalletId', 'WalletCard', 'WalletVault', 'WalletBTC', 'WalletETH', 'WalletUSDT', 'WalletBUSD', 'WalletSOL', 'WalletGALA',
                   'WalletXRP', 'WalletADA', 'WalletLTC', 'WalletDOGE', 'WalletBNB', 'WalletZIL', 'WalletMATIC', 'WalletAVAX', 'WalletUser') 
 
 class CryptoSerializer(serializers.ModelSerializer):

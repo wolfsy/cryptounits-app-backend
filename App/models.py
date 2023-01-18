@@ -4,23 +4,27 @@ from django.contrib.auth.models import AbstractUser
 # Create your models here.
 class User(AbstractUser):
     UserId = models.AutoField(primary_key = True)
-    UserRole = models.CharField(max_length = 100, default = "USER")
     UserFirstName = models.CharField(max_length = 100)
     UserSurname = models.CharField(max_length = 100)
     UserEmail = models.CharField(max_length = 100, unique = True)
     UserProfileURL = models.CharField(max_length = 255, blank = True, null = True)
-    UserFacebookURL = models.CharField(max_length = 255, blank = True, null = True)
-    UserInstagramURL = models.CharField(max_length = 255, blank = True, null = True)
-    UserTwitterURL = models.CharField(max_length = 255, blank = True, null = True)
     UserPassword = models.CharField(max_length = 255)
     UserStatus = models.BooleanField(default = True)
 
     username = None
+    email = None
+    first_name = 'UserFirstName'
+    last_name = 'UserSurname'
+    is_superuser = 'UserStatus'
+    password = 'UserPassword'
+    is_active = 'UserStatus'
     USERNAME_FIELD = 'UserEmail'
+
     REQUIRED_FIELDS = []
 
 class Wallet(models.Model):
     WalletId = models.AutoField(primary_key = True)
+    WalletCard = models.CharField(max_length = 16)
     WalletVault = models.FloatField(default = 0.0)
     WalletBTC = models.FloatField(default = 0.0)
     WalletETH = models.FloatField(default = 0.0)
