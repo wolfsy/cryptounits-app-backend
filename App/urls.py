@@ -18,8 +18,10 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
-    re_path(r'^wallets$', views.wallet_list),
-    re_path(r'^wallet/(?P<id>[0-9]+)$', views.wallet_detail),
-    re_path(r'^cryptos$', views.crypto_list),
-    re_path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui')
+   re_path(r'^wallets$', views.wallet_list),
+   re_path(r'^wallet/(?P<id>[0-9]+)$', views.wallet_detail),
+   re_path(r'^cryptos$', views.crypto_list),
+   re_path(r'^register$', views.register_user),
+   re_path(r'^users$', views.user_list),
+   re_path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui')
 ]

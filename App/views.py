@@ -4,8 +4,8 @@ from rest_framework.parsers import JSONParser
 from django.http.response import JsonResponse
 from rest_framework import status
 
-from App.models import Wallet, Users, Crypto, Transactions
-from App.serializers import WalletSerializer, UsersSerializer, CryptoSerializer, TransactionsSerializer
+from App.models import Wallet, User, Crypto, Transactions
+from App.serializers import WalletSerializer, UserSerializer, CryptoSerializer, TransactionsSerializer
 
 # Create your views here.
 
@@ -60,3 +60,20 @@ def crypto_list(request):
         cryptos = Crypto.objects.filter().order_by('CryptoCurrentPrice')
         cryptos_serializer = CryptoSerializer(cryptos, many = True)
         return JsonResponse(cryptos_serializer.data, safe = False)
+
+@api_view(['POST'])
+def register_user(request):
+    user_data = JSONParser().parse(request)
+    users_serializer = UserSerializer(data = user_data)
+    if users_serializer.is_valid():
+        users_serializer.save()
+        return JsonResponse(users_serializer.data, safe = False) 
+    else:
+        return JsonResponse({'message': 'Failed to register new user'}, status = status.HTTP_400_BAD_REQUEST, safe = False)
+
+@api_view(['GET'])
+def user_list(request):
+    if request.method == 'GET':
+        users = User.objects.all()
+        users_serializer = UserSerializer(users, many = True)
+        return JsonResponse(users_serializer.data, safe = False)
