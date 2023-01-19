@@ -79,7 +79,7 @@ def login_user(request):
     user = User.objects.filter(UserEmail = request.data['UserEmail']).first()
     users_serializer = UserSerializer(user)
 
-    print((user))
+    print((user.UserPassword))
     print((request.data['UserPassword']))
     if not user:
         raise AuthenticationFailed('Could not find the user!')
