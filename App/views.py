@@ -79,11 +79,11 @@ def register_user(request):
 
 @api_view(['POST'])
 def login_user(request):
+    user = User.objects.filter(UserEmail = request.data['UserEmail']).first()
     users_serializer = UserSerializer(data = request.data)
-    user: User = User.objects.filter(UserEmail = request.data['UserEmail']).first()
-    print((users_serializer))
+    
     if users_serializer.is_valid():
-        NewBackend.authenticate(request)
+        NewBackend.authenticate(request, user)
         # return Response({'message': 'The user has successfully logged in!'})
     # return Response({'message': 'Could not authenticate the user.'})
         access_token = create_access_token(user.UserId)

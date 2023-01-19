@@ -6,10 +6,8 @@ from .models import User
 from .serializers import UserSerializer
 
 class NewBackend(ModelBackend):
-    def authenticate(request) -> User:
-
-        user: User = User.objects.filter(UserEmail = request.data['UserEmail']).first()
-
+    def authenticate(request, user) -> User:
+        
         if not user:
             raise AuthenticationFailed('Could not find the user!')
 
