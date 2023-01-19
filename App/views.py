@@ -5,11 +5,11 @@ from django.http.response import JsonResponse
 from rest_framework import status
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
-import jwt, datetime
 
 from App.models import Wallet, User, Crypto, Transactions
 from App.serializers import WalletSerializer, UserSerializer, CryptoSerializer, TransactionsSerializer
 from App.backend import NewBackend
+from App.authentication import create_access_token
 
 # Create your views here.
 
@@ -80,28 +80,22 @@ def register_user(request):
 @api_view(['POST'])
 def login_user(request):
     users_serializer = UserSerializer(data = request.data)
-
+    user: User = User.objects.filter(UserEmail = request.data['UserEmail']).first()
+    print((users_serializer))
     if users_serializer.is_valid():
         NewBackend.authenticate(request)
+        # return Response({'message': 'The user has successfully logged in!'})
+    # return Response({'message': 'Could not authenticate the user.'})
+        access_token = create_access_token(user.UserId)
+        response = Response()
+        response.set_cookie(key = 'accessToken', value = access_token, httponly = True)
 
-        return Response({'message': 'The user has successfully logged in!'})
-    return Response({'message': 'Could not authenticate the user.'})
-    # payload = {
-    #     'UserId': User.UserId,
-    #     'Expiration': datetime.datetime.utcnow() + datetime.timedelta(minutes = 60),
-    #     'TokenCreationTime': datetime.datetime.utcnow()
-    # }
+        response.data = {
+            'jwt': access_token
+        }  
 
-    # token = jwt.encode(payload, 'SECRET_KEY', algorithm = 'HS256')
-    
-    # response = Response()
-    # response.set_cookie(key = 'jwt', value = token, httponly = True)
-
-    # response.data = {
-    #     'jwt': token
-    # }
-
-    # return response
+        return response
+    return JsonResponse({'message': 'Users serializer is invalid!'})
 
 @api_view(['GET'])
 def user_view(request):
@@ -110,14 +104,14 @@ def user_view(request):
     if not token:
         raise AuthenticationFailed('User unauthenticated!')
 
-    try:
-        payload = jwt.decode(token, 'secret', algorithm = ['HS256'])
-    except jwt.ExpiredSignatureError:
-        raise AuthenticationFailed('User unauthenticated!')
+    # try:
+        # payload = jwt.decode(token, 'secret', algorithm = ['HS256'])
+    # except jwt.ExpiredSignatureError:
+        # raise AuthenticationFailed('User unauthenticated!')
 
-    user = User.objects.filter(UserId = payload['UserId']).first()
-    users_serializer = UserSerializer(user)
-    return JsonResponse(users_serializer.data) 
+    # user = User.objects.filter(UserId = payload['UserId']).first()
+    # users_serializer = UserSerializer(user)
+    # return JsonResponse(users_serializer.data) 
 
 @api_view(['POST'])
 def logout_user(request):

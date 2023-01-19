@@ -3,6 +3,7 @@ from django.contrib.auth.hashers import check_password
 from rest_framework.exceptions import AuthenticationFailed
 
 from .models import User
+from .serializers import UserSerializer
 
 class NewBackend(ModelBackend):
     def authenticate(request) -> User:
@@ -15,3 +16,6 @@ class NewBackend(ModelBackend):
         if not check_password(request.data['UserPassword'], user.UserPassword):
             raise AuthenticationFailed('The wrong password has been provided!')
             
+        serializer = UserSerializer(user)
+
+        return serializer.data
