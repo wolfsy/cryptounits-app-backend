@@ -8,7 +8,7 @@ class User(AbstractUser):
     UserSurname = models.CharField(max_length = 100)
     UserEmail = models.CharField(max_length = 100, unique = True)
     UserProfileURL = models.CharField(max_length = 255, blank = True, null = True)
-    UserPassword = models.CharField(max_length = 255)
+    UserPassword = models.CharField(max_length = 128, verbose_name = 'UserPassword')
     UserStatus = models.BooleanField(default = True)
 
     username = None

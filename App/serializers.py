@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from App.models import Wallet, User, Crypto, Transactions
+from django.contrib.auth.hashers import make_password
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -10,14 +11,8 @@ class UserSerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
-        UserPassword = validated_data.pop('UserPassword', None)
-        UserInstance = self.Meta.model(**validated_data)
-
-        if UserPassword is not None:
-            UserInstance.set_password(UserPassword)
-        UserInstance.save()
-        return UserInstance
-
+        validated_data['UserPassword'] = make_password(validated_data['UserPassword'])
+        return super(UserSerializer, self).create(validated_data)
 
 class WalletSerializer(serializers.ModelSerializer):
     class Meta:
