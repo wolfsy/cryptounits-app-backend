@@ -9,13 +9,14 @@ class User(AbstractUser):
     UserEmail = models.CharField(max_length = 100, unique = True)
     UserProfileURL = models.CharField(max_length = 255, blank = True, null = True)
     UserPassword = models.CharField(max_length = 128, verbose_name = 'UserPassword')
+    UserIsAdmin = models.BooleanField(default = False)
     UserStatus = models.BooleanField(default = True)
 
     username = None
     email = None
     first_name = 'UserFirstName'
     last_name = 'UserSurname'
-    is_superuser = 'UserStatus'
+    is_superuser = 'UserIsAdmin'
     password = 'UserPassword'
     is_active = 'UserStatus'
     USERNAME_FIELD = 'UserEmail'

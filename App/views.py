@@ -66,28 +66,37 @@ def crypto_list(request):
 
 @api_view(['POST'])
 def register_user(request):
-    users_serializer = UserSerializer(data = request.data)
+    user_data = JSONParser().parse(request)
+    users_serializer = UserSerializer(data = user_data)
+    print((users_serializer))
 
     if users_serializer.is_valid():
         users_serializer.save()
-        return JsonResponse(users_serializer.data) 
+        return JsonResponse(users_serializer.data, safe = False) 
     else:
         return JsonResponse({'message': 'Failed to register new user.'}, status = status.HTTP_400_BAD_REQUEST, safe = False)
 
 @api_view(['POST'])
 def login_user(request):
-    user = User.objects.filter(UserEmail = request.data['UserEmail']).first()
-    users_serializer = UserSerializer(user)
+    users_serializer = UserSerializer(data = request.data)
+    print((users_serializer))
 
-    print((user.UserPassword))
-    print((request.data['UserPassword']))
-    if not user:
-        raise AuthenticationFailed('Could not find the user!')
+    if users_serializer.is_valid():
+        print((users_serializer.validated_data))
+        user = User.objects.filter(UserEmail = request.data['UserEmail']).first()
+        
+        print((user.UserPassword))
+        print((request.data['UserPassword']))
+        if not user:
+            raise AuthenticationFailed('Could not find the user!')
 
-    if not user.check_password(request.data['UserPassword']):
-        raise AuthenticationFailed('The wrong password has been provided!')
+        if not user.check_password(request.data['UserPassword']):
+            raise AuthenticationFailed('The wrong password has been provided!')
 
-    return Response(users_serializer.data)
+        return Response({'message': 'ok'})
+    print((users_serializer.validated_data))
+    print((users_serializer.errors))
+    return Response({'message': 'not ok'})
     # payload = {
     #     'UserId': User.UserId,
     #     'Expiration': datetime.datetime.utcnow() + datetime.timedelta(minutes = 60),
