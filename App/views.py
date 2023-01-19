@@ -9,6 +9,7 @@ import jwt, datetime
 
 from App.models import Wallet, User, Crypto, Transactions
 from App.serializers import WalletSerializer, UserSerializer, CryptoSerializer, TransactionsSerializer
+from App.backend import NewBackend
 
 # Create your views here.
 
@@ -79,24 +80,12 @@ def register_user(request):
 @api_view(['POST'])
 def login_user(request):
     users_serializer = UserSerializer(data = request.data)
-    print((users_serializer))
 
     if users_serializer.is_valid():
-        print((users_serializer.validated_data))
-        user = User.objects.filter(UserEmail = request.data['UserEmail']).first()
-        
-        print((user.UserPassword))
-        print((request.data['UserPassword']))
-        if not user:
-            raise AuthenticationFailed('Could not find the user!')
+        NewBackend.authenticate(request)
 
-        if not user.check_password(request.data['UserPassword']):
-            raise AuthenticationFailed('The wrong password has been provided!')
-
-        return Response({'message': 'ok'})
-    print((users_serializer.validated_data))
-    print((users_serializer.errors))
-    return Response({'message': 'not ok'})
+        return Response({'message': 'The user has successfully logged in!'})
+    return Response({'message': 'Could not authenticate the user.'})
     # payload = {
     #     'UserId': User.UserId,
     #     'Expiration': datetime.datetime.utcnow() + datetime.timedelta(minutes = 60),
