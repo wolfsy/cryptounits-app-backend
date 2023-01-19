@@ -1,17 +1,29 @@
 from rest_framework import serializers
-from App.models import Wallet, Users, Crypto, Transactions
+from App.models import Wallet, User, Crypto, Transactions
+from django.contrib.auth.hashers import make_password
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('UserId', 'UserFirstName', 'UserSurname', 'UserEmail', 'UserProfileURL', 'UserPassword')
+        extra_kwargs = {
+            'UserPassword': {'write_only': True}, 'UserFirstName': {'required': False}, 'UserSurname': {'required': False},
+            'UserEmail': {'validators': []}
+        }
+
+    def create(self, validated_data):
+        validated_data['UserPassword'] = make_password(validated_data['UserPassword'], None)
+        return super(UserSerializer, self).create(validated_data)
+
+    # zmien z powrotem na glownego usera, usun na dole settings app.user i skonfiguruj normalnie 
+    # user = User.objects.create_user(UserFirstName = 'UserFirstName', UserSurname = 'UserSurname',
+    #     UserEmail = 'UserEmail', UserProfileURL = 'UserProfileURL', UserPassword = 'UserPassword', UserStatus = 'UserStatus')
 
 class WalletSerializer(serializers.ModelSerializer):
     class Meta:
         model = Wallet
-        fields = ('WalletId', 'WalletVault', 'WalletBTC', 'WalletETH', 'WalletUSDT', 'WalletBUSD', 'WalletSOL', 'WalletGALA',
-                  'WalletXRP', 'WalletADA', 'WalletLTC', 'WalletDOGE', 'WalletBNB', 'WalletZIL', 'WalletMATIC', 'WalletAVAX') 
-
-class UsersSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Users
-        fields = ('UserId', 'UserRole', 'UserName', 'UserSurname', 'UserEmail', 'UserProfileURL', 'UserFacebookURL', 
-                  'UserInstagramURL', 'UserTwitterURL', 'UserPassword', 'UserStatus', 'UserWallet')
+        fields = ('WalletId', 'WalletCard', 'WalletVault', 'WalletBTC', 'WalletETH', 'WalletUSDT', 'WalletBUSD', 'WalletSOL', 'WalletGALA',
+                  'WalletXRP', 'WalletADA', 'WalletLTC', 'WalletDOGE', 'WalletBNB', 'WalletZIL', 'WalletMATIC', 'WalletAVAX', 'WalletUser') 
 
 class CryptoSerializer(serializers.ModelSerializer):
     class Meta:
