@@ -5,11 +5,12 @@ from django.http.response import JsonResponse
 from rest_framework import status
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
+from rest_framework.authentication import get_authorization_header
 
 from App.models import Wallet, User, Crypto, Transactions
 from App.serializers import WalletSerializer, UserSerializer, CryptoSerializer, TransactionsSerializer
 from App.backend import NewBackend
-from App.authentication import create_access_token
+from App.authentication import create_access_token, decode_access_token
 
 # Create your views here.
 
@@ -67,9 +68,11 @@ def crypto_list(request):
 
 @api_view(['POST'])
 def register_user(request):
-    user_data = JSONParser().parse(request)
-    users_serializer = UserSerializer(data = user_data)
-    print((users_serializer))
+    users_serializer = UserSerializer(data = request.data)
+    user = User.objects.filter(UserEmail = request.data['UserEmail']).first()
+
+    if user:
+        return JsonResponse({'message': 'Passed address e-mail is already registered!'}, status = status.HTTP_409_CONFLICT, safe = False)
 
     if users_serializer.is_valid():
         users_serializer.save()
@@ -81,17 +84,16 @@ def register_user(request):
 def login_user(request):
     user = User.objects.filter(UserEmail = request.data['UserEmail']).first()
     users_serializer = UserSerializer(data = request.data)
-    
+
     if users_serializer.is_valid():
         NewBackend.authenticate(request, user)
-        # return Response({'message': 'The user has successfully logged in!'})
-    # return Response({'message': 'Could not authenticate the user.'})
-        access_token = create_access_token(user.UserId)
+
+        accessToken = create_access_token(user.UserId)
         response = Response()
-        response.set_cookie(key = 'accessToken', value = access_token, httponly = True)
+        response.set_cookie(key = 'JWT', value = accessToken, httponly = True)
 
         response.data = {
-            'jwt': access_token
+            'JWT': accessToken
         }  
 
         return response
@@ -99,25 +101,25 @@ def login_user(request):
 
 @api_view(['GET'])
 def user_view(request):
-    token = request.COOKIES.get('jwt')
+    auth = get_authorization_header(request).split()
 
-    if not token:
+    if auth and len(auth) == 2:
+        accessToken = auth[1].decode('utf-8')
+        UserId = decode_access_token(accessToken)
+        user = User.objects.filter(UserId = UserId).first()
+        users_serializer = UserSerializer(user)
+        return JsonResponse(users_serializer.data) 
+
+    if not accessToken:
         raise AuthenticationFailed('User unauthenticated!')
 
-    # try:
-        # payload = jwt.decode(token, 'secret', algorithm = ['HS256'])
-    # except jwt.ExpiredSignatureError:
-        # raise AuthenticationFailed('User unauthenticated!')
-
-    # user = User.objects.filter(UserId = payload['UserId']).first()
-    # users_serializer = UserSerializer(user)
-    # return JsonResponse(users_serializer.data) 
-
 @api_view(['POST'])
-def logout_user(request):
-    response = JsonResponse()
-    response.delete_cookie('jwt')
-    response.data = {'message': 'User has successfully logout.'}
+def logout_user(response):
+    response = Response()
+    response.delete_cookie('JWT')
+    response.data = {
+        'message': 'User has successfully logout.'
+    }
     return response
 
 @api_view(['GET'])
