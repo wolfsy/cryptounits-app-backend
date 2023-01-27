@@ -15,10 +15,6 @@ class UserSerializer(serializers.ModelSerializer):
         validated_data['UserPassword'] = make_password(validated_data['UserPassword'], None)
         return super(UserSerializer, self).create(validated_data)
 
-    # zmien z powrotem na glownego usera, usun na dole settings app.user i skonfiguruj normalnie 
-    # user = User.objects.create_user(UserFirstName = 'UserFirstName', UserSurname = 'UserSurname',
-    #     UserEmail = 'UserEmail', UserProfileURL = 'UserProfileURL', UserPassword = 'UserPassword', UserStatus = 'UserStatus')
-
 class WalletSerializer(serializers.ModelSerializer):
     class Meta:
         model = Wallet
@@ -33,6 +29,5 @@ class CryptoSerializer(serializers.ModelSerializer):
 class TransactionsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transactions
-        fields = ('TransactionId', 'TransactionActionType', 'TransactionCryptoType', 'TransactionAmount', 
-                  'TransactionTime', 'TransactionsUser')
+        fields = ('TransactionId', 'TransactionActionType', 'TransactionCryptoType', 'TransactionAmount', 'TransactionsUser')
                   

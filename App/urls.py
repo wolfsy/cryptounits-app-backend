@@ -26,5 +26,6 @@ urlpatterns = [
    re_path(r'^users$', views.user_list),
    re_path(r'^user$', views.user_view),
    re_path(r'^logout$', views.logout_user),
+   re_path(r'^transaction$', views.perform_transaction),
    re_path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui')
 ]

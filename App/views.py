@@ -128,3 +128,13 @@ def user_list(request):
         users = User.objects.all()
         users_serializer = UserSerializer(users, many = True)
         return JsonResponse(users_serializer.data, safe = False)
+
+@api_view(['POST'])
+def perform_transaction(request):
+    transaction_data = JSONParser().parse(request)
+    transaction_serializer = TransactionsSerializer(data = transaction_data)
+    if transaction_serializer.is_valid():
+        transaction_serializer.save()
+        return JsonResponse({'message': 'Record has been added successfully.'}, status = status.HTTP_201_CREATED, safe = False) 
+    else:
+        return JsonResponse({'message': 'Failed to add new record.'}, status = status.HTTP_400_BAD_REQUEST, safe = False)
