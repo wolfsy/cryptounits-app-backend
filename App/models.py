@@ -25,6 +25,7 @@ class User(AbstractUser):
 
 class Wallet(models.Model):
     WalletId = models.AutoField(primary_key = True)
+    WalletAddress = models.CharField(max_length = 35)
     WalletCard = models.CharField(max_length = 16)
     WalletVault = models.FloatField(default = 0.0)
     WalletBTC = models.FloatField(default = 0.0)
